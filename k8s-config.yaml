@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spring-boot-namespace
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app-deployment
+  namespace: spring-boot-namespace
+spec:
+  selector:
+    matchLabels:
+      app: spring-boot-k8s
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: spring-boot-k8s
+    spec:
+      containers:
+        - name: demo-app-container
+          image: demo-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-service
+  namespace: spring-boot-namespace
+spec:
+  selector:
+    app: spring-boot-k8s
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: NodePort
